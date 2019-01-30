@@ -1,6 +1,6 @@
 # To Do app
 
-A simple to do app made with Django and SQLite.
+A simple to do app with file upload feature made with Django and SQLite.
 
 ## Insructions
 
