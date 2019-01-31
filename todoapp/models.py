@@ -1,10 +1,10 @@
 from django.db import models
-from todoapp.validators import validate_is_zip_or_image
+from todoapp.validators import validate_is_zip_or_image, size_validator
 
 # Create your models here.
 class todoTask(models.Model):
     content = models.TextField()
 
 class fileModel(models.Model):
-    mediaFile = models.FileField(upload_to='uploadedFiles/', validators = [validate_is_zip_or_image])
+    mediaFile = models.FileField(upload_to='uploadedFiles/', validators = [validate_is_zip_or_image,size_validator])
 

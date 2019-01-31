@@ -1,5 +1,6 @@
 import os
 
+from django.core.files import File
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views import View
@@ -8,6 +9,10 @@ from .forms import fileForm
 from django.core.files.storage import FileSystemStorage
 from django.dispatch import receiver
 from django.db import models
+import zipfile
+import magic
+import shutil
+
 
 
 class ToDoView(View):
@@ -40,7 +45,11 @@ class Upload(View):
 
         form = fileForm(self.request.POST, self.request.FILES)
         if form.is_valid():
-            form.save()
+            inputFile = self.request.FILES['mediaFile']
+            if (zipfile.is_zipfile(inputFile)):
+                self.processZipFile(inputFile)
+            else:
+                form.save()
         
         files = fileModel.objects.all()
         return render(request, 'uploadPage.html', {'form': form, 'files': files})
@@ -49,6 +58,28 @@ class Upload(View):
 
         files = fileModel.objects.all()
         return render(request, 'uploadPage.html', {'files': files})
+
+    def processZipFile(self,inFile):
+
+        with zipfile.ZipFile(inFile, 'r') as zipObj:
+
+            zipObj.extractall('zipContents')
+        
+        for file in os.listdir('zipContents'):
+
+            filename = os.fsdecode(file)
+            
+            if filename.endswith(".jpeg") or filename.endswith(".jpg") or filename.endswith(".png"):
+
+                with open('./zipContents/'+filename,'rb') as f:
+                    contents = File(f)
+                    fileModel.objects.create(mediaFile = contents)
+
+        shutil.rmtree('zipContents')
+                
+
+
+
 
 
 class RemoveFile(View):
