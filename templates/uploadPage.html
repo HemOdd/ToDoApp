@@ -1,0 +1,62 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+
+{% block content %}
+
+<h1>Upload File</h1>
+
+<form method ="POST" enctype = "multipart/form-data">
+    {% csrf_token %}
+    <input type = "file" name = "mediaFile">
+    <button type = "submit">Upload</button>
+    {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+    
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Thumbnail</th>
+            <th>Download</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in files %}
+            <tr>
+                {% if item.mediaFile %}
+                <td> {{ item.mediaFile.name }} </td>
+                <td><img src="{{ item.mediaFile.url }}"  height="80px"/></td>
+                <td><a href="{{ item.mediaFile.url }}">
+                    <button>Download</button>
+                </a></td>
+                <td>
+                        <form style = "display: inline;" action="/removeFile/{{item.id}}/" method = "POST">{% csrf_token %}
+                            <input type = "submit" value = "Delete"/>
+                        </form> 
+                </td> 
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
