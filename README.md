@@ -1,5 +1,5 @@
 # ToDoApp
-A simple To Do app written using Django and SQLite
+A simple To Do app and file upload feature written using Django and SQLite
 
 ## Insructions
 
